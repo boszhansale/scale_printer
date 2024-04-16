@@ -20,16 +20,35 @@ import (
 func main() {
 
 	cfg := config.NewConfig()
+
+	//testLabel := printer.Label{
+	//	Name:         "1",
+	//	Id:           "1234",
+	//	Description:  "test тест 1",
+	//	Manufacturer: "test тест 1",
+	//	CreateDate:   "1234",
+	//	DateCode:     "1604",
+	//	Weight:       "123",
+	//	Cert:         "test тест 1",
+	//	Barcode:      "1233321321",
+	//}
+	//
+	//testLabel.Print(cfg.PrinterName)
+	//
+	//time.Sleep(time.Second * 15)
+
 	repo := repository.NewRepo(cfg)
 
 	a := app.New()
 	w := a.NewWindow("Печать этикеток")
 	w.Resize(fyne.NewSize(600, 700))
 	bindingWeight := binding.NewString()
+
 	//весы
 
 	s, err := scale.Connect(cfg.WeightAddress)
 	if err != nil {
+		log.Println("error connect to scale")
 		errorMessageQuit(err, w, a)
 	}
 	categories, err := repo.GetCategories()
@@ -40,9 +59,10 @@ func main() {
 	go func() {
 		var oldValue int64
 		for {
-
 			value, stb, err := s.GetWeight()
+			log.Println(value)
 			if err != nil {
+				log.Println("error get weight")
 				log.Println(err)
 			}
 			bindingWeight.Set(strconv.FormatInt(value, 10))
@@ -159,6 +179,16 @@ func main() {
 			}
 			err = label.Print(cfg.PrinterName)
 			if err != nil {
+				log.Println("name: " + labelProduct.Name)
+				log.Println("description: " + labelProduct.Composition)
+				log.Println("Id: " + labelProduct.Id)
+				log.Println("DateCode: " + labelProduct.DateCode)
+				log.Println("Manufacturer: " + labelProduct.Address)
+				log.Println("Cert: " + labelProduct.Cert)
+				log.Println("CreateDate: " + labelProduct.DateCreate)
+				log.Println("Weight: " + labelProduct.Weight)
+				log.Println("Barcode: " + labelProduct.Barcode)
+
 				log.Println(err)
 				continue
 				//errorMessage(err, w)

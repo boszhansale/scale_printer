@@ -22,10 +22,10 @@ type Label struct {
 func (l Label) Print(printerName string) error {
 
 	//printerName := "ZDesigner ZD888-203dpi ZPL"
-
+	//
 	p, err := printer.Open(printerName)
 	if err != nil {
-		log.Println("error print not found")
+		log.Println(printerName + ": error print not found")
 		return errors.New("не найден принтер: " + printerName)
 	}
 	defer p.Close()
@@ -34,6 +34,12 @@ func (l Label) Print(printerName string) error {
 		log.Print(err)
 		return err
 	}
+
+	//_, err = p.Write([]byte(getFont()))
+	//if err != nil {
+	//	log.Print(err)
+	//	return errors.New("ошибка при установке шрифта ")
+	//}
 
 	_, err = p.Write([]byte(setNumberFont()))
 	if err != nil {
@@ -52,17 +58,26 @@ func (l Label) Print(printerName string) error {
 func getFont() string {
 	data := `
 	^XA
-	^LL725
+	^LL525
 	^PW463
 	^WDE:*.TTF
 	^XZ
 `
 	return data
 }
-func setNumberFont() string {
+func oldSetNumberFont() string {
 	data := `
 	^XA
 	^CWE,E:9835202.TTF
+	^XZ
+`
+	return data
+}
+
+func setNumberFont() string {
+	data := `
+	^XA
+	^CWE,E:ARIALR.TTF
 	^XZ
 `
 	return data

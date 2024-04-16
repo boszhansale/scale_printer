@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/binary"
 	"errors"
+	"log"
 	"net"
 	"time"
 )
@@ -13,7 +14,8 @@ type Scale struct {
 }
 
 func Connect(address string) (*Scale, error) {
-	conn, err := net.DialTimeout("tcp", address, 5*time.Second)
+	log.Println("Connecting to ", address)
+	conn, err := net.DialTimeout("tcp", address, 2*time.Second)
 
 	if err != nil {
 		return nil, errors.New("Не удалось подключиться к весам ")
