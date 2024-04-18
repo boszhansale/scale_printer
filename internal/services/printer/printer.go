@@ -16,7 +16,7 @@ import (
 )
 
 type Label struct {
-	Name, Id, Description, Manufacturer, CreateDate, DateCode, Weight, Cert, Barcode string
+	Name, Id, Description, Manufacturer, CreateDate, DateCode, Weight, Cert, Barcode, Paper string
 }
 
 func (l Label) Print(printerName string) error {
@@ -123,24 +123,46 @@ func getStaticImage() string {
 }
 
 func getData(label Label) string {
-	data := "^XA^CI28^LL725^PW463"
-	data += "^FO300,590" + getStaticImage()
+	data := ""
+	if label.Paper == "58" {
+		data += "^XA^CI28^LL725^PW463"
+		data += "^FO300,590" + getStaticImage()
 
-	data += fmt.Sprintf("^FO5,5^FB445,3,0^AEN,20,20^FD%s^FS", label.Name)
-	data += fmt.Sprintf("^FO5,65^FB445,25,0^AEN,16,16^FD%s^FS", label.Description)
+		data += fmt.Sprintf("^FO5,5^FB445,3,0^AEN,20,20^FD%s^FS", label.Name)
+		data += fmt.Sprintf("^FO5,65^FB445,25,0^AEN,16,16^FD%s^FS", label.Description)
 
-	data += fmt.Sprintf("^FO330,495^GB55,30,1^FS ^FO338,510^AEN,16,16^FD%s^FS", label.DateCode)
-	data += fmt.Sprintf("^FO390,495^GB55,30,1^FS ^FO399,510^AEN,16,16^FD%s^FS", label.Id)
+		data += fmt.Sprintf("^FO330,495^GB55,30,1^FS ^FO338,510^AEN,16,16^FD%s^FS", label.DateCode)
+		data += fmt.Sprintf("^FO390,495^GB55,30,1^FS ^FO399,510^AEN,16,16^FD%s^FS", label.Id)
 
-	data += fmt.Sprintf("^FO10,525^AENб16,16^FD%s^FS", label.Cert)
-	data += fmt.Sprintf("^FO10,540^AENб16,16^FD%s^FS", label.CreateDate)
-	data += fmt.Sprintf("^FO10,555^AENб16,16^FD%s^FS", label.Weight)
+		data += fmt.Sprintf("^FO10,525^AENб16,16^FD%s^FS", label.Cert)
+		data += fmt.Sprintf("^FO10,540^AENб16,16^FD%s^FS", label.CreateDate)
+		data += fmt.Sprintf("^FO10,555^AENб16,16^FD%s^FS", label.Weight)
 
-	data += fmt.Sprintf("^FO10,570^BEN,70,Y,N,N^FD%s^FS", label.Barcode)
+		data += fmt.Sprintf("^FO10,570^BEN,70,Y,N,N^FD%s^FS", label.Barcode)
 
-	data += fmt.Sprintf("^FB445,6,0^FO5,665^AENб15,15^FD%s^FS", label.Manufacturer)
+		data += fmt.Sprintf("^FB445,6,0^FO5,665^AENб15,15^FD%s^FS", label.Manufacturer)
 
-	data += "^XZ"
+		data += "^XZ"
+	} else {
+		data += "^XA^CI28^LL900^PW500"
+		data += "^FO375,690" + getStaticImage()
+
+		data += fmt.Sprintf("^FO5,5^FB520,3,0^AEN,20,20^FD%s^FS", label.Name)
+		data += fmt.Sprintf("^FO5,65^FB520,25,0^AEN,16,16^FD%s^FS", label.Description)
+
+		data += fmt.Sprintf("^FO405,599^GB55,30,1^FS ^FO413,610^AEN,16,16^FD%s^FS", label.DateCode)
+		data += fmt.Sprintf("^FO465,599^GB55,30,1^FS ^FO474,610^AEN,16,16^FD%s^FS", label.Id)
+
+		data += fmt.Sprintf("^FO10,625^AENб16,16^FD%s^FS", label.Cert)
+		data += fmt.Sprintf("^FO10,640^AENб16,16^FD%s^FS", label.CreateDate)
+		data += fmt.Sprintf("^FO10,655^AENб16,16^FD%s^FS", label.Weight)
+
+		data += fmt.Sprintf("^FO10,670^BEN,70,Y,N,N^FD%s^FS", label.Barcode)
+
+		data += fmt.Sprintf("^FB520,6,0^FO5,765^AENб15,15^FD%s^FS", label.Manufacturer)
+
+		data += "^XZ"
+	}
 
 	return data
 }

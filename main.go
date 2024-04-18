@@ -22,20 +22,21 @@ func main() {
 	cfg := config.NewConfig()
 
 	//testLabel := printer.Label{
-	//	Name:         "1",
+	//	Name:         "«Қойдың қарыны» «Требуха баранья»",
 	//	Id:           "1234",
-	//	Description:  "test тест 1",
-	//	Manufacturer: "test тест 1",
-	//	CreateDate:   "1234",
+	//	Description:  "Мұздатылған өңделген ет субөнімі. Құрамы:қойдың қарыны. 100 г өнімнің тағамдық құндылығы: ақуыз 18 г, май 4 г. Энергетикалық құндылығы/ құнарлылығы 108 ккал/443,8 кДж. Орташа көрсеткіштер келтірілген. Вакуумда қапталған. Жарамдылық мерзімі: минус 18°С сақтау температурасында қаптамада 180 тәуліктен артық емес, қаптамасын ашқан соң- жарамдылық мерзімі шегінде 12 сағат. Өнімді қайта мұздатуға болмайды. Дайындау тәсілі: өнімді термиялық өңдеуге (пісіруге) болады. Жасап шығарылған күнін термочектен қараңыз.",
+	//	Manufacturer: "Өндіруші:«Первомайские деликатесы» ЖШС, Қазақстан Республикасы, Алматы облысы, Іле ауданы, Қоянқұс ауылы, Абай көшесі, №200\nИзготовитель: ТОО«Первомайские Деликатесы», Республика Казахстан, Алматинская область, Илийский район, село Коянкус,улица Абай, №200. т:+7 775 256 22 55",
+	//	CreateDate:   "Дайындалған күні/Дата изготовления: 17/04/2024",
 	//	DateCode:     "1604",
-	//	Weight:       "123",
-	//	Cert:         "test тест 1",
+	//	Weight:       "таза салмағы: 250 гр +/-3%",
+	//	Cert:         "ГОСТ 32244-2013",
 	//	Barcode:      "1233321321",
+	//	Paper:        "70",
 	//}
 	//
 	//testLabel.Print(cfg.PrinterName)
 	//
-	//time.Sleep(time.Second * 15)
+	//time.Sleep(time.Second * 65)
 
 	repo := repository.NewRepo(cfg)
 
@@ -89,11 +90,15 @@ func main() {
 
 	var selectedCategory string
 	var selectedProduct string
+	var selectedPaper string
 	var lang = "kz"
 	var productPlaceHolder = "выберите продукт"
-
+	papers := []string{"58", "70"}
 	productsWidget := widget.NewSelect(products, func(selected string) {
 		selectedProduct = selected
+	})
+	paperWidget := widget.NewSelect(papers, func(selected string) {
+		selectedPaper = selected
 	})
 	productsWidget.PlaceHolder = productPlaceHolder
 	categoriesWidget := widget.NewSelect(categories, func(selected string) {
@@ -112,6 +117,7 @@ func main() {
 
 	})
 	categoriesWidget.PlaceHolder = "выберите категорию"
+	paperWidget.PlaceHolder = "выберите размер бумаги"
 
 	langWidget := widget.NewSelect([]string{"kz", "en"}, func(selected string) {
 		lang = selected
@@ -146,6 +152,9 @@ func main() {
 		langWidget,
 		widget.NewLabel("Продукт"),
 		productsWidget,
+		widget.NewLabel("Размер бумаги"),
+		paperWidget,
+
 		container.NewGridWithColumns(2, dateBool, dateWidget),
 		widget.NewLabelWithData(bindingWeight),
 	)
@@ -158,8 +167,11 @@ func main() {
 				//errorMessage(errors.New("выберите продукт"), w)
 				//return
 			}
+			if selectedPaper == "" {
+				continue
+			}
 			_weight, _ := bindingWeight.Get()
-
+			fmt.Println(selectedPaper)
 			labelProduct, err := repo.ProductCreate(selectedProduct, lang, _weight, dateBool.Checked, dateWidget.Text)
 			if err != nil {
 				log.Println(err)
@@ -176,6 +188,7 @@ func main() {
 				CreateDate:   labelProduct.DateCreate,
 				Weight:       labelProduct.Weight,
 				Barcode:      labelProduct.Barcode,
+				Paper:        selectedPaper,
 			}
 			err = label.Print(cfg.PrinterName)
 			if err != nil {
@@ -188,6 +201,7 @@ func main() {
 				log.Println("CreateDate: " + labelProduct.DateCreate)
 				log.Println("Weight: " + labelProduct.Weight)
 				log.Println("Barcode: " + labelProduct.Barcode)
+				log.Println("Paper: " + selectedPaper)
 
 				log.Println(err)
 				continue
