@@ -7,3 +7,7 @@ tasks:
     cmds:
       - go build -ldflags -H=windowsgui main.go
     silent: true
+  fyne:
+    cmds:
+      - fyne-cross windows -app-id="com.boszhan" -arch=*
+    silent: true

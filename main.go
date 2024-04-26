@@ -47,10 +47,10 @@ func main() {
 
 	//весы
 
-	s, err := scale.Connect(cfg.WeightAddress)
-	if err != nil {
+	scale, scaleErr := scale.Connect(cfg.WeightAddress)
+	if scaleErr != nil {
 		log.Println("error connect to scale")
-		errorMessageQuit(err, w, a)
+		errorMessage(scaleErr, w)
 	}
 	categories, err := repo.GetCategories()
 	if err != nil {
@@ -60,28 +60,32 @@ func main() {
 	go func() {
 		var oldValue int64
 		for {
-			value, stb, err := s.GetWeight()
+			if scale == nil {
+				continue
+			}
+			value, stb, err := scale.GetWeight()
 			log.Println(value)
 			if err != nil {
 				log.Println("error get weight")
 				log.Println(err)
-			}
-			bindingWeight.Set(strconv.FormatInt(value, 10))
+			} else {
+				bindingWeight.Set(strconv.FormatInt(value, 10))
 
-			if !stb {
-				continue
-			}
-			if value <= 10 {
-				oldValue = 0
-				continue
-			}
-			if value == oldValue {
-				continue
-			}
+				if !stb {
+					continue
+				}
+				if value <= 10 {
+					oldValue = 0
+					continue
+				}
+				if value == oldValue {
+					continue
+				}
 
-			stable <- stb
-			oldValue = value
-			time.Sleep(time.Second * 1)
+				stable <- stb
+				oldValue = value
+				time.Sleep(time.Second * 1)
+			}
 
 		}
 	}()
@@ -189,6 +193,7 @@ func main() {
 				Weight:       labelProduct.Weight,
 				Barcode:      labelProduct.Barcode,
 				Paper:        selectedPaper,
+				Measure:      labelProduct.Measure,
 			}
 			err = label.Print(cfg.PrinterName)
 			if err != nil {
@@ -202,6 +207,7 @@ func main() {
 				log.Println("Weight: " + labelProduct.Weight)
 				log.Println("Barcode: " + labelProduct.Barcode)
 				log.Println("Paper: " + selectedPaper)
+				log.Println("Measure: " + labelProduct.Measure)
 
 				log.Println(err)
 				continue

@@ -16,7 +16,7 @@ import (
 )
 
 type Label struct {
-	Name, Id, Description, Manufacturer, CreateDate, DateCode, Weight, Cert, Barcode, Paper string
+	Name, Id, Description, Manufacturer, CreateDate, DateCode, Weight, Cert, Barcode, Paper, Measure string
 }
 
 func (l Label) Print(printerName string) error {
@@ -136,7 +136,9 @@ func getData(label Label) string {
 
 		data += fmt.Sprintf("^FO10,525^AENб16,16^FD%s^FS", label.Cert)
 		data += fmt.Sprintf("^FO10,540^AENб16,16^FD%s^FS", label.CreateDate)
-		data += fmt.Sprintf("^FO10,555^AENб16,16^FD%s^FS", label.Weight)
+		if label.Measure == "2" {
+			data += fmt.Sprintf("^FO10,555^AENб16,16^FD%s^FS", label.Weight)
+		}
 
 		data += fmt.Sprintf("^FO10,570^BEN,70,Y,N,N^FD%s^FS", label.Barcode)
 
@@ -155,7 +157,9 @@ func getData(label Label) string {
 
 		data += fmt.Sprintf("^FO10,625^AENб16,16^FD%s^FS", label.Cert)
 		data += fmt.Sprintf("^FO10,640^AENб16,16^FD%s^FS", label.CreateDate)
-		data += fmt.Sprintf("^FO10,655^AENб16,16^FD%s^FS", label.Weight)
+		if label.Measure == "2" {
+			data += fmt.Sprintf("^FO10,655^AENб16,16^FD%s^FS", label.Weight)
+		}
 
 		data += fmt.Sprintf("^FO10,670^BEN,70,Y,N,N^FD%s^FS", label.Barcode)
 

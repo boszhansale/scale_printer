@@ -10,4 +10,5 @@ type Product struct {
 	DateCreate  string `json:"date_create"`
 	DateCode    string `json:"date_code"`
 	Composition string `json:"composition"`
+	Measure     string `json:"measure"`
 }
