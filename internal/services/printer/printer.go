@@ -136,7 +136,7 @@ func getData(label Label) string {
 
 		data += fmt.Sprintf("^FO10,525^AENб16,16^FD%s^FS", label.Cert)
 		data += fmt.Sprintf("^FO10,540^AENб16,16^FD%s^FS", label.CreateDate)
-		if label.Measure == "2" {
+		if label.Measure == "2" || label.Weight != "0" {
 			data += fmt.Sprintf("^FO10,555^AENб16,16^FD%s^FS", label.Weight)
 		}
 
@@ -157,7 +157,7 @@ func getData(label Label) string {
 
 		data += fmt.Sprintf("^FO10,625^AENб16,16^FD%s^FS", label.Cert)
 		data += fmt.Sprintf("^FO10,640^AENб16,16^FD%s^FS", label.CreateDate)
-		if label.Measure == "2" {
+		if label.Measure == "2" || label.Weight != "0" {
 			data += fmt.Sprintf("^FO10,655^AENб16,16^FD%s^FS", label.Weight)
 		}
 

@@ -19,8 +19,6 @@ import (
 
 func main() {
 
-	cfg := config.NewConfig()
-
 	//testLabel := printer.Label{
 	//	Name:         "«Қойдың қарыны» «Требуха баранья»",
 	//	Id:           "1234",
@@ -38,11 +36,11 @@ func main() {
 	//
 	//time.Sleep(time.Second * 65)
 
+	cfg := config.NewConfig()
 	repo := repository.NewRepo(cfg)
-
 	a := app.New()
-	w := a.NewWindow("Печать этикеток")
-	w.Resize(fyne.NewSize(600, 700))
+	w := a.NewWindow("Весовой Печать этикеток")
+	w.Resize(fyne.NewSize(700, 800))
 	bindingWeight := binding.NewString()
 
 	//весы
