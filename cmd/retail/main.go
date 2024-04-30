@@ -164,41 +164,35 @@ func main() {
 					Paper:        selectedPaper,
 					Measure:      labelProduct.Measure,
 				}
-				fmt.Println(label)
 				_countPrint, err := _countPrintBinding.Get()
 				if err != nil {
 					log.Println(err)
 					errorMessage(err, w)
 					return
 				}
-				countPrint, err := strconv.Atoi(_countPrint)
 				if err != nil {
 					log.Println(err)
 					errorMessage(err, w)
 					return
 				}
-				for i := 0; i < countPrint; i++ {
-					fmt.Println(i)
-					err = label.Print(cfg.PrinterName)
+				err = label.Print(cfg.PrinterName, _countPrint, _weight)
 
-					if err != nil {
-						log.Println("name: " + labelProduct.Name)
-						log.Println("description: " + labelProduct.Composition)
-						log.Println("Id: " + labelProduct.Id)
-						log.Println("DateCode: " + labelProduct.DateCode)
-						log.Println("Manufacturer: " + labelProduct.Address)
-						log.Println("Cert: " + labelProduct.Cert)
-						log.Println("CreateDate: " + labelProduct.DateCreate)
-						log.Println("Weight: " + labelProduct.Weight)
-						log.Println("Barcode: " + labelProduct.Barcode)
-						log.Println("Paper: " + selectedPaper)
-						log.Println("Measure: " + labelProduct.Measure)
+				if err != nil {
+					log.Println("name: " + labelProduct.Name)
+					log.Println("description: " + labelProduct.Composition)
+					log.Println("Id: " + labelProduct.Id)
+					log.Println("DateCode: " + labelProduct.DateCode)
+					log.Println("Manufacturer: " + labelProduct.Address)
+					log.Println("Cert: " + labelProduct.Cert)
+					log.Println("CreateDate: " + labelProduct.DateCreate)
+					log.Println("Weight: " + labelProduct.Weight)
+					log.Println("Barcode: " + labelProduct.Barcode)
+					log.Println("Paper: " + selectedPaper)
+					log.Println("Measure: " + labelProduct.Measure)
 
-						log.Println(err)
-						errorMessage(err, w)
-						return
-					}
-
+					log.Println(err)
+					errorMessage(err, w)
+					return
 				}
 
 				log.Println("print success")

@@ -193,7 +193,7 @@ func main() {
 				Paper:        selectedPaper,
 				Measure:      labelProduct.Measure,
 			}
-			err = label.Print(cfg.PrinterName)
+			err = label.Print(cfg.PrinterName, "1", _weight)
 			if err != nil {
 				log.Println("name: " + labelProduct.Name)
 				log.Println("description: " + labelProduct.Composition)

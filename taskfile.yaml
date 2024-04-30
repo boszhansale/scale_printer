@@ -9,5 +9,5 @@ tasks:
     silent: true
   fyne:
     cmds:
-      - fyne-cross windows -app-id="com.boszhan" -arch=*
+      - fyne-cross windows -app-id="com.boszhan" -arch=amd64
     silent: true

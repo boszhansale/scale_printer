@@ -19,7 +19,7 @@ type Label struct {
 	Name, Id, Description, Manufacturer, CreateDate, DateCode, Weight, Cert, Barcode, Paper, Measure string
 }
 
-func (l Label) Print(printerName string) error {
+func (l Label) Print(printerName string, countPrint string, _weight string) error {
 
 	//printerName := "ZDesigner ZD888-203dpi ZPL"
 	//
@@ -46,7 +46,7 @@ func (l Label) Print(printerName string) error {
 		log.Print(err)
 		return errors.New("ошибка при установке шрифта ")
 	}
-	_, err = p.Write([]byte(getData(l)))
+	_, err = p.Write([]byte(getData(l, countPrint, _weight)))
 	if err != nil {
 		log.Print(err)
 		return errors.New("ошибка при записи на принтер ")
@@ -79,7 +79,12 @@ func setNumberFont() string {
 	^XA
 	^CWE,E:ARIALR.TTF
 	^XZ
-`
+	`
+	//	data := `
+	//	^XA
+	//	^CWE,E:9835202.TTF
+	//	^XZ
+	//`
 	return data
 }
 
@@ -122,7 +127,7 @@ func getStaticImage() string {
 		`
 }
 
-func getData(label Label) string {
+func getData(label Label, countPrint string, _weight string) string {
 	data := ""
 	if label.Paper == "58" {
 		data += "^XA^CI28^LL725^PW463"
@@ -136,14 +141,16 @@ func getData(label Label) string {
 
 		data += fmt.Sprintf("^FO10,525^AENб16,16^FD%s^FS", label.Cert)
 		data += fmt.Sprintf("^FO10,540^AENб16,16^FD%s^FS", label.CreateDate)
-		if label.Measure == "2" || label.Weight != "0" {
+		if label.Measure == "2" && _weight != "0" && _weight != "" {
 			data += fmt.Sprintf("^FO10,555^AENб16,16^FD%s^FS", label.Weight)
 		}
 
-		data += fmt.Sprintf("^FO10,570^BEN,70,Y,N,N^FD%s^FS", label.Barcode)
+		if label.Barcode != "" {
+			data += fmt.Sprintf("^FO10,570^BEN,70,Y,N,N^FD%s^FS", label.Barcode)
+		}
 
 		data += fmt.Sprintf("^FB445,6,0^FO5,665^AENб15,15^FD%s^FS", label.Manufacturer)
-
+		data += "^PQ" + countPrint + ",0,1,Y"
 		data += "^XZ"
 	} else {
 		data += "^XA^CI28^LL900^PW500"
@@ -157,14 +164,14 @@ func getData(label Label) string {
 
 		data += fmt.Sprintf("^FO10,625^AENб16,16^FD%s^FS", label.Cert)
 		data += fmt.Sprintf("^FO10,640^AENб16,16^FD%s^FS", label.CreateDate)
-		if label.Measure == "2" || label.Weight != "0" {
+		if label.Measure == "2" && _weight != "0" && _weight != "" {
 			data += fmt.Sprintf("^FO10,655^AENб16,16^FD%s^FS", label.Weight)
 		}
-
-		data += fmt.Sprintf("^FO10,670^BEN,70,Y,N,N^FD%s^FS", label.Barcode)
-
+		if label.Barcode != "" {
+			data += fmt.Sprintf("^FO10,670^BEN,70,Y,N,N^FD%s^FS", label.Barcode)
+		}
 		data += fmt.Sprintf("^FB520,6,0^FO5,765^AENб15,15^FD%s^FS", label.Manufacturer)
-
+		data += "^PQ" + countPrint + ",0,1,Y"
 		data += "^XZ"
 	}
 
