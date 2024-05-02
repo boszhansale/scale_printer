@@ -170,29 +170,49 @@ func main() {
 					errorMessage(err, w)
 					return
 				}
+				countPrint, err := strconv.Atoi(_countPrint)
+
 				if err != nil {
 					log.Println(err)
 					errorMessage(err, w)
 					return
 				}
-				err = label.Print(cfg.PrinterName, _countPrint, _weight)
+				batchSize := 50
+				if countPrint <= batchSize {
 
-				if err != nil {
-					log.Println("name: " + labelProduct.Name)
-					log.Println("description: " + labelProduct.Composition)
-					log.Println("Id: " + labelProduct.Id)
-					log.Println("DateCode: " + labelProduct.DateCode)
-					log.Println("Manufacturer: " + labelProduct.Address)
-					log.Println("Cert: " + labelProduct.Cert)
-					log.Println("CreateDate: " + labelProduct.DateCreate)
-					log.Println("Weight: " + labelProduct.Weight)
-					log.Println("Barcode: " + labelProduct.Barcode)
-					log.Println("Paper: " + selectedPaper)
-					log.Println("Measure: " + labelProduct.Measure)
+					err = label.Print(cfg.PrinterName, _countPrint, _weight)
 
-					log.Println(err)
-					errorMessage(err, w)
-					return
+					if err != nil {
+						log.Println("name: " + labelProduct.Name)
+						log.Println("description: " + labelProduct.Composition)
+						log.Println("Id: " + labelProduct.Id)
+						log.Println("DateCode: " + labelProduct.DateCode)
+						log.Println("Manufacturer: " + labelProduct.Address)
+						log.Println("Cert: " + labelProduct.Cert)
+						log.Println("CreateDate: " + labelProduct.DateCreate)
+						log.Println("Weight: " + labelProduct.Weight)
+						log.Println("Barcode: " + labelProduct.Barcode)
+						log.Println("Paper: " + selectedPaper)
+						log.Println("Measure: " + labelProduct.Measure)
+
+						log.Println(err)
+						errorMessage(err, w)
+						return
+					}
+				} else {
+					for i := 0; i < countPrint; i += batchSize {
+						batchPrintCount := countPrint - i
+						if batchPrintCount > batchSize {
+							batchPrintCount = batchSize
+						}
+
+						err = label.Print(cfg.PrinterName, strconv.Itoa(batchPrintCount), _weight)
+						if err != nil {
+							log.Println(err)
+							errorMessage(err, w)
+							return
+						}
+					}
 				}
 
 				log.Println("print success")
