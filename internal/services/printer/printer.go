@@ -169,7 +169,7 @@ func getData(label Label, countPrint string) string {
 		data += fmt.Sprintf("^FO5,5^FB520,3,0^AEN,20,20^FD%s^FS", label.Name)
 		data += fmt.Sprintf("^FO5,65^FB520,35,0^AEN,16,16^FD%s^FS", label.Description)
 
-		data += fmt.Sprintf("^FO465,599^GB55,30,1^FS ^FO474,610^AEN,16,16^FD%s^FS", label.DateCode)
+		data += fmt.Sprintf("^FO455,599^GB55,30,1^FS ^FO464,610^AEN,16,16^FD%s^FS", label.DateCode)
 
 		data += fmt.Sprintf("^FO10,625^AENб16,16^FD%s^FS", label.Cert)
 		data += fmt.Sprintf("^FO10,640^AENб16,16^FDДайындалған күні/Дата изготовления %s^FS", date.Format("02/01/2006"))
