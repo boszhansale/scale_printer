@@ -6,11 +6,8 @@ import (
 )
 
 type Config struct {
-	CategoriesApi    string `env:"CATEGORIES_API" envDefault:""`
-	ProductsApi      string `env:"PRODUCTS_API" envDefault:""`
-	ProductCreateApi string `env:"PRODUCT_CREATE_API" envDefault:""`
-	WeightAddress    string `env:"WEIGHT_ADDRESS"`
-	PrinterName      string `env:"PRINTER_NAME"`
+	WeightAddress string `env:"WEIGHT_ADDRESS"`
+	PrinterName   string `env:"PRINTER_NAME"`
 }
 
 func NewConfig() *Config {

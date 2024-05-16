@@ -13,13 +13,14 @@ import (
 	"os"
 	"simonwaldherr.de/go/zplgfa"
 	"strings"
+	"time"
 )
 
 type Label struct {
-	Name, Id, Description, Manufacturer, CreateDate, DateCode, Weight, Cert, Barcode, Paper, Measure string
+	Name, Description, CreateDate, DateCode, Weight, Cert, Barcode, Paper, Lang, Measure string
 }
 
-func (l Label) Print(printerName string, countPrint string, _weight string) error {
+func (l Label) Print(printerName string, countPrint string) error {
 
 	//printerName := "ZDesigner ZD888-203dpi ZPL"
 	//
@@ -41,12 +42,20 @@ func (l Label) Print(printerName string, countPrint string, _weight string) erro
 	//	return errors.New("ошибка при установке шрифта ")
 	//}
 
-	_, err = p.Write([]byte(setNumberFont()))
-	if err != nil {
-		log.Print(err)
-		return errors.New("ошибка при установке шрифта ")
+	if printerName == "ZDesigner ZD888-203dpi ZPL" {
+		_, err = p.Write([]byte(oldSetNumberFont()))
+		if err != nil {
+			log.Print(err)
+			return errors.New("ошибка при установке шрифта ")
+		}
+	} else {
+		_, err = p.Write([]byte(setNumberFont()))
+		if err != nil {
+			log.Print(err)
+			return errors.New("ошибка при установке шрифта ")
+		}
 	}
-	_, err = p.Write([]byte(getData(l, countPrint, _weight)))
+	_, err = p.Write([]byte(getData(l, countPrint)))
 	if err != nil {
 		log.Print(err)
 		return errors.New("ошибка при записи на принтер ")
@@ -122,8 +131,10 @@ func getStaticImage() string {
 		`
 }
 
-func getData(label Label, countPrint string, _weight string) string {
+func getData(label Label, countPrint string) string {
 	data := ""
+	date, _ := time.Parse("2006-01-02", label.CreateDate)
+
 	if label.Paper == "58" {
 		data += "^XA^CI28^LL725^PW463"
 		data += "^FO300,590" + getStaticImage()
@@ -131,20 +142,24 @@ func getData(label Label, countPrint string, _weight string) string {
 		data += fmt.Sprintf("^FO5,5^FB445,3,0^AEN,20,20^FD%s^FS", label.Name)
 		data += fmt.Sprintf("^FO5,65^FB445,35,0^AEN,16,16^FD%s^FS", label.Description)
 
-		data += fmt.Sprintf("^FO330,495^GB55,30,1^FS ^FO338,510^AEN,16,16^FD%s^FS", label.DateCode)
-		data += fmt.Sprintf("^FO390,495^GB55,30,1^FS ^FO399,510^AEN,16,16^FD%s^FS", label.Id)
+		data += fmt.Sprintf("^FO390,495^GB55,30,1^FS ^FO399,508^AEN,16,16^FD%s^FS", label.DateCode)
 
 		data += fmt.Sprintf("^FO10,525^AENб16,16^FD%s^FS", label.Cert)
-		data += fmt.Sprintf("^FO10,540^AENб16,16^FD%s^FS", label.CreateDate)
-		if label.Measure == "2" && _weight != "0" && _weight != "" {
-			data += fmt.Sprintf("^FO10,555^AENб16,16^FD%s^FS", label.Weight)
+		data += fmt.Sprintf("^FO10,540^AENб16,16^FDДайындалған күні/Дата изготовления %s^FS", date.Format("02/01/2006"))
+		if label.Measure == "2" && label.Weight != "0" && label.Weight != "" {
+			data += "^FO10,555^AENб16,16^FDтаза салмағы/масса нетто: " + label.Weight + " гр +/-3%^FS"
 		}
-
 		if label.Barcode != "" {
 			data += fmt.Sprintf("^FO10,570^BEN,70,Y,N,N^FD%s^FS", label.Barcode)
 		}
 
-		data += fmt.Sprintf("^FB445,6,0^FO5,665^AENб15,15^FD%s^FS", label.Manufacturer)
+		if label.Lang == "kz" {
+			data += fmt.Sprintf("^FB445,6,0^FO9,667^AENб15,15^FD%s^FS", "Өндіруші: «Первомайские деликатесы» ЖШС, Қазақстан Республикасы, Алматы облысы, Іле ауданы, Қоянқұс ауылы, Абай көшесі, №200")
+			data += fmt.Sprintf("^FB455,6,0^FO9,710^AENб15,15^FD%s^FS", "Изготовитель: ТОО«Первомайские Деликатесы», Республика Казахстан, Алматинская область, Илийский район, село Коянкус,улица Абай, №200. т:+7(727)260-36-48")
+		} else {
+			data += fmt.Sprintf("^FB445,6,0^FO9,667^AENб15,15^FD%s^FS", "Manufacturer: Pervomayskie Delikatesy LLP, Republic of Kazakhstan, Almaty region, Ili district,Koyankus village,Abay Street, No. 200 tel: +7(727)260-36-48")
+		}
+
 		data += "^PQ" + countPrint + ",0,1,Y"
 		data += "^XZ"
 	} else {
@@ -154,18 +169,24 @@ func getData(label Label, countPrint string, _weight string) string {
 		data += fmt.Sprintf("^FO5,5^FB520,3,0^AEN,20,20^FD%s^FS", label.Name)
 		data += fmt.Sprintf("^FO5,65^FB520,35,0^AEN,16,16^FD%s^FS", label.Description)
 
-		data += fmt.Sprintf("^FO405,599^GB55,30,1^FS ^FO413,610^AEN,16,16^FD%s^FS", label.DateCode)
-		data += fmt.Sprintf("^FO465,599^GB55,30,1^FS ^FO474,610^AEN,16,16^FD%s^FS", label.Id)
+		data += fmt.Sprintf("^FO465,599^GB55,30,1^FS ^FO474,610^AEN,16,16^FD%s^FS", label.DateCode)
 
 		data += fmt.Sprintf("^FO10,625^AENб16,16^FD%s^FS", label.Cert)
-		data += fmt.Sprintf("^FO10,640^AENб16,16^FD%s^FS", label.CreateDate)
-		if label.Measure == "2" && _weight != "0" && _weight != "" {
-			data += fmt.Sprintf("^FO10,655^AENб16,16^FD%s^FS", label.Weight)
+		data += fmt.Sprintf("^FO10,640^AENб16,16^FDДайындалған күні/Дата изготовления %s^FS", date.Format("02/01/2006"))
+		if label.Measure == "2" && label.Weight != "0" && label.Weight != "" {
+
+			data += "^FO10,655^AENб16,16^FDтаза салмағы/масса нетто: " + label.Weight + " гр +/-3%^FS"
+
 		}
 		if label.Barcode != "" {
 			data += fmt.Sprintf("^FO10,670^BEN,70,Y,N,N^FD%s^FS", label.Barcode)
 		}
-		data += fmt.Sprintf("^FB520,6,0^FO5,765^AENб15,15^FD%s^FS", label.Manufacturer)
+		if label.Lang == "kz" {
+			data += fmt.Sprintf("^FB520,6,0^FO5,765^AENб15,15^FD%s^FS", "Өндіруші: «Первомайские деликатесы» ЖШС, Қазақстан Республикасы, Алматы облысы, Іле ауданы, Қоянқұс ауылы, Абай көшесі, №200")
+			data += fmt.Sprintf("^FB520,6,0^FO5,808^AENб15,15^FD%s^FS", "Изготовитель: ТОО«Первомайские Деликатесы», Республика Казахстан, Алматинская область, Илийский район, село Коянкус,улица Абай, №200. т:+7(727)260-36-48")
+		} else {
+			data += fmt.Sprintf("^FB520,6,0^FO5,765^AENб15,15^FD%s^FS", "Manufacturer: Pervomayskie Delikatesy LLP, Republic of Kazakhstan, Almaty region, Ili district,Koyankus village,Abay Street, No. 200 tel: +7(727)260-36-48")
+		}
 		data += "^PQ" + countPrint + ",0,1,Y"
 		data += "^XZ"
 	}
