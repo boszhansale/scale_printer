@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	"log"
 	"strconv"
@@ -19,7 +20,7 @@ import (
 )
 
 func main() {
-	jsonStr := repository.Download()
+	jsonStr := repository.Get()
 	db := repository.New(jsonStr)
 
 	cfg := config.NewConfig()
@@ -136,6 +137,12 @@ func main() {
 		container.NewGridWithColumns(2, dateCheckWidget, dateWidget),
 
 		widget.NewLabelWithData(weightBinding),
+
+		&layout.Spacer{},
+		container.NewGridWithColumns(3, &widget.Button{Text: "скачать базу", OnTapped: func() {
+			repository.Download()
+			utils.MessageQuit("Перезапустите программу", w, a)
+		}}),
 	)
 
 	go func() {

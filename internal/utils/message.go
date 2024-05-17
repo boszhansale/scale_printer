@@ -12,6 +12,13 @@ func ErrorMessageQuit(err error, window fyne.Window, app fyne.App) {
 		app.Quit()
 	})
 }
+func MessageQuit(text string, window fyne.Window, app fyne.App) {
+	infoDialog := dialog.NewInformation("", text, window)
+	infoDialog.Show()
+	infoDialog.SetOnClosed(func() {
+		app.Quit()
+	})
+}
 func ErrorMessage(err error, window fyne.Window) {
 	infoDialog := dialog.NewInformation("Ошибка", err.Error(), window)
 	infoDialog.Show()

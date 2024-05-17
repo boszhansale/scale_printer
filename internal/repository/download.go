@@ -20,32 +20,49 @@ func isFileStale(filename string, maxAge time.Duration) bool {
 	return time.Since(fileInfo.ModTime()) > maxAge
 }
 
-func Download() []byte {
+func Get() []byte {
 
 	const maxAge = 24 * time.Hour
 
 	if !isFileStale(filename, maxAge) {
-		return get()
+		return getFile()
 	}
 
 	url := "https://boszhan.kz/api/label"
 	data, err := send("GET", url, nil)
 	if err != nil {
 		log.Println("Error sending request:", err)
-		return get()
+		return getFile()
 	}
 
 	err = os.WriteFile(filename, data, 0644)
 	if err != nil {
 		log.Println("Error writing to file:", err)
-		return get()
+		return getFile()
 	}
 
 	log.Println("Data saved to file")
 	return data
 }
+func Download() {
 
-func get() []byte {
+	url := "https://boszhan.kz/api/label"
+	data, err := send("GET", url, nil)
+	if err != nil {
+		log.Println("Error sending request:", err)
+		return
+	}
+
+	err = os.WriteFile(filename, data, 0644)
+	if err != nil {
+		log.Println("Error writing to file:", err)
+		return
+	}
+
+	log.Println("Data saved to file")
+}
+
+func getFile() []byte {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		log.Println("Error reading from file:", err)

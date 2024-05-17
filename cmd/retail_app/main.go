@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	"log"
 	"strconv"
@@ -20,7 +21,7 @@ import (
 
 func main() {
 
-	jsonStr := repository.Download()
+	jsonStr := repository.Get()
 
 	cfg := config.NewConfig()
 	db := repository.New(jsonStr)
@@ -119,6 +120,7 @@ func main() {
 
 		container.NewGridWithColumns(2, widget.NewLabel("количество печати"), countPrintWidget),
 		container.New(components.NewMarginLayout(margin)),
+
 		container.New(components.NewMarginLayout(margin)),
 
 		&widget.Button{
@@ -216,6 +218,11 @@ func main() {
 				countPrintBinding.Set("1")
 				weightBinding.Set("0")
 			}},
+		&layout.Spacer{},
+		container.NewGridWithColumns(3, &widget.Button{Text: "скачать базу", OnTapped: func() {
+			repository.Download()
+			utils.MessageQuit("Перезапустите программу", w, a)
+		}}),
 	)
 
 	fmt.Println(selectedCategory, selectedProduct)
