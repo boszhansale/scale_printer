@@ -162,7 +162,10 @@ func getData(label Label, countPrint string) string {
 
 		data += "^PQ" + countPrint + ",0,1,Y"
 		data += "^XZ"
-	} else {
+		return data
+
+	}
+	if label.Paper == "70" {
 		data += "^XA^CI28^LL900^PW500"
 		data += "^FO375,690" + getStaticImage()
 		//2800000014556
@@ -189,9 +192,26 @@ func getData(label Label, countPrint string) string {
 		}
 		data += "^PQ" + countPrint + ",0,1,Y"
 		data += "^XZ"
+
+		return data
 	}
 
-	return data
+	if label.Paper == "30" {
+		data += "^XA^CI28^LL360^PW463"
+		data += "^FO300,200" + getStaticImage()
+
+		data += fmt.Sprintf("^FO390,95^GB55,30,1^FS ^FO399,100^AEN,16,16^FD%s^FS", label.DateCode)
+
+		data += fmt.Sprintf("^FO20,130^AENб16,16^FDДайындалған күні:^FS")
+		data += fmt.Sprintf("^FO20,150^AENб16,16^FDДата изготовления:^FS")
+		data += fmt.Sprintf("^FO200,140^AENб16,16^FD%s^FS", date.Format("02/01/2006"))
+
+		data += "^PQ" + countPrint + ",0,1,Y"
+		data += "^XZ"
+
+		return data
+	}
+	return ""
 }
 
 func getImage() string {

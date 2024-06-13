@@ -33,7 +33,7 @@ func main() {
 	categories := db.GetCategoryNames()
 
 	var products []string
-	var papers = []string{"58", "70"}
+	var papers = []string{"58", "70", "30"}
 
 	var selectedCategory string
 	var selectedProduct string
