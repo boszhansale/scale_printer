@@ -21,6 +21,7 @@ import (
 
 func main() {
 
+	printer.GetImage()
 	jsonStr := repository.Get()
 
 	cfg := config.NewConfig()
