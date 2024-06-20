@@ -17,13 +17,14 @@ import (
 )
 
 type Label struct {
-	Name, Description, CreateDate, DateCode, Weight, Cert, Barcode, Paper, Lang, Measure string
+	Name, Description, DescriptionRu, KzRuMargin, CreateDate, DateCode, Weight, Cert, Barcode, Paper, Lang, Measure, DateType string
+	DateBool                                                                                                                  bool
 }
 
 func (l Label) Print(printerName string, countPrint string) error {
 
 	//printerName := "ZDesigner ZD888-203dpi ZPL"
-	//
+
 	p, err := printer.Open(printerName)
 	if err != nil {
 		log.Println(printerName + ": error print not found")
@@ -64,6 +65,7 @@ func (l Label) Print(printerName string, countPrint string) error {
 	return nil
 
 }
+
 func getFont() string {
 	data := `
 	^XA
@@ -74,6 +76,7 @@ func getFont() string {
 `
 	return data
 }
+
 func oldSetNumberFont() string {
 	data := `
 	^XA
@@ -93,7 +96,6 @@ func setNumberFont() string {
 }
 
 func getStaticImage() string {
-
 	return `
 		^GFA,1353,656,16,
 000000000007FFFFFFDDDC0000F80000
@@ -137,27 +139,40 @@ func getStaticImage() string {
 0000000000007C01FC01C00124FF3C00
 000000000003F0007F81C00124DE2800
 00000000000380000F81C000E4DBAC00
-
-		`
+`
 }
 
 func getData(label Label, countPrint string) string {
 	data := ""
 	date, _ := time.Parse("2006-01-02", label.CreateDate)
-
+	//58*92
 	if label.Paper == "58" {
 		data += "^XA^CI28^LL725^PW463"
 		data += "^FO300,590" + getStaticImage()
 
 		data += fmt.Sprintf("^FO5,5^FB445,3,0^AEN,20,20^FD%s^FS", label.Name)
+
 		data += fmt.Sprintf("^FO5,65^FB445,35,0^AEN,16,16^FD%s^FS", label.Description)
 
 		data += fmt.Sprintf("^FO390,495^GB55,30,1^FS ^FO399,508^AEN,16,16^FD%s^FS", label.DateCode)
 
-		data += fmt.Sprintf("^FO10,525^AENб16,16^FD%s^FS", label.Cert)
-		data += fmt.Sprintf("^FO10,540^AENб16,16^FDДайындалған күні/Дата изготовления %s^FS", date.Format("02/01/2006"))
+		if label.DateType == "1" {
+			data += fmt.Sprintf("^FO10,525^AENб16,16^FD%s^FS", label.Cert)
+			if label.DateBool {
+				data += fmt.Sprintf("^FO10,540^AENб16,16^FDДайындалған күні/Дата изготовления %s^FS", date.Format("02/01/2006"))
+			}
+
+		} else {
+			data += fmt.Sprintf("^FO10,510^AENб16,16^FD%s^FS", label.Cert)
+
+			if label.DateBool {
+				data += fmt.Sprintf("^FO10,525^AENб16,16^FDДайындалған және оралған күні %s^FS", date.Format("02/01/2006"))
+				data += fmt.Sprintf("^FO10,540^AENб16,16^FDДата изготовления и упаковывания %s^FS", date.Format("02/01/2006"))
+			}
+		}
+
 		if label.Measure == "2" && label.Weight != "0" && label.Weight != "" {
-			data += "^FO10,555^AENб16,16^FDтаза салмағы/масса нетто: " + label.Weight + " гр +/-3%^FS"
+			data += "^FO10,555^AENб16,16^FDтаза салмағы/масса нетто: " + label.Weight + " гр^FS"
 		}
 		if label.Barcode != "" {
 			data += fmt.Sprintf("^FO10,570^BEN,70,Y,N,N^FD%s^FS", label.Barcode)
@@ -175,30 +190,41 @@ func getData(label Label, countPrint string) string {
 		return data
 
 	}
+	//68*108
 	if label.Paper == "70" {
 		data += "^XA^CI28^LL900^PW500"
-		data += "^FO375,690" + getStaticImage()
+		data += "^FO365,690" + getStaticImage()
 		//2800000014556
 		data += fmt.Sprintf("^FO5,5^FB520,3,0^AEN,20,20^FD%s^FS", label.Name)
-		data += fmt.Sprintf("^FO5,65^FB520,35,0^AEN,16,16^FD%s^FS", label.Description)
+		data += fmt.Sprintf("^FO5,65^FB515,35,0^AEN,15,15^FD%s^FS", label.Description)
+		data += fmt.Sprintf("^FO5,%s^FB515,35,0^AEN,15,15^FD%s^FS", label.KzRuMargin, label.DescriptionRu)
 
-		data += fmt.Sprintf("^FO455,599^GB55,30,1^FS ^FO464,610^AEN,16,16^FD%s^FS", label.DateCode)
+		data += fmt.Sprintf("^FO445,599^GB55,30,1^FS ^FO455,610^AEN,16,16^FD%s^FS", label.DateCode)
 
-		data += fmt.Sprintf("^FO10,625^AENб16,16^FD%s^FS", label.Cert)
-		data += fmt.Sprintf("^FO10,640^AENб16,16^FDДайындалған күні/Дата изготовления %s^FS", date.Format("02/01/2006"))
+		if label.DateType == "2" {
+			data += fmt.Sprintf("^FO10,625^AENб16,16^FD%s^FS", label.Cert)
+			if label.DateBool {
+				data += fmt.Sprintf("^FO10,640^AENб16,16^FDДайындалған күні/Дата изготовления %s^FS", date.Format("02/01/2006"))
+			}
+		} else {
+			data += fmt.Sprintf("^FO10,610^AENб16,16^FD%s^FS", label.Cert)
+			if label.DateBool {
+				data += fmt.Sprintf("^FO10,625^AENб16,16^FDДайындалған және оралған күні %s^FS", date.Format("02/01/2006"))
+				data += fmt.Sprintf("^FO10,640^AENб16,16^FDДата изготовления и упаковывания %s^FS", date.Format("02/01/2006"))
+			}
+		}
+
 		if label.Measure == "2" && label.Weight != "0" && label.Weight != "" {
-
-			data += "^FO10,655^AENб16,16^FDтаза салмағы/масса нетто: " + label.Weight + " гр +/-3%^FS"
-
+			data += "^FO10,655^AENб16,16^FDтаза салмағы/масса нетто: " + label.Weight + " гр^FS"
 		}
 		if label.Barcode != "" {
 			data += fmt.Sprintf("^FO10,670^BEN,70,Y,N,N^FD%s^FS", label.Barcode)
 		}
 		if label.Lang == "kz" {
-			data += fmt.Sprintf("^FB520,6,0^FO5,765^AENб15,15^FD%s^FS", "Өндіруші: «Первомайские деликатесы» ЖШС, Қазақстан Республикасы, Алматы облысы, Іле ауданы, Қоянқұс ауылы, Абай көшесі, №200")
-			data += fmt.Sprintf("^FB520,6,0^FO5,808^AENб15,15^FD%s^FS", "Изготовитель: ТОО«Первомайские Деликатесы», Республика Казахстан, Алматинская область, Илийский район, село Коянкус,улица Абай, №200. т:+7(727)260-36-48")
+			data += fmt.Sprintf("^FB515,6,0^FO5,765^AENб15,15^FD%s^FS", "Өндіруші: «Первомайские деликатесы» ЖШС, Қазақстан Республикасы, Алматы облысы, Іле ауданы, Қоянқұс ауылы, Абай көшесі, №200")
+			data += fmt.Sprintf("^FB515,6,0^FO5,808^AENб15,15^FD%s^FS", "Изготовитель: ТОО«Первомайские Деликатесы», Республика Казахстан, Алматинская область, Илийский район, село Коянкус,улица Абай, №200. т:+7(727)260-36-48")
 		} else {
-			data += fmt.Sprintf("^FB520,6,0^FO5,765^AENб15,15^FD%s^FS", "Manufacturer: Pervomayskie Delikatesy LLP, Republic of Kazakhstan, Almaty region, Ili district,Koyankus village,Abay Street, No. 200 tel: +7(727)260-36-48")
+			data += fmt.Sprintf("^FB515,6,0^FO5,765^AENб15,15^FD%s^FS", "Manufacturer: Pervomayskie Delikatesy LLP, Republic of Kazakhstan, Almaty region, Ili district,Koyankus village,Abay Street, No. 200 tel: +7(727)260-36-48")
 		}
 		data += "^PQ" + countPrint + ",0,1,Y"
 		data += "^XZ"
@@ -255,6 +281,7 @@ func GetImage() string {
 
 	return fmt.Sprintf("^XA,^FS ^FO20,20 %s^FS,^XZ", str)
 }
+
 func getGraphicData(img image.Image) []byte {
 	var data []byte
 	bounds := img.Bounds()
@@ -266,6 +293,7 @@ func getGraphicData(img image.Image) []byte {
 	}
 	return data
 }
+
 func convertToGraphicField(source image.Image) string {
 	var gfType string
 	size := source.Bounds().Size()

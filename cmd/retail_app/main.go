@@ -21,7 +21,6 @@ import (
 
 func main() {
 
-	printer.GetImage()
 	jsonStr := repository.Get()
 
 	cfg := config.NewConfig()
@@ -159,6 +158,8 @@ func main() {
 				if selectedLang == "kz" {
 					label.Name = product.NameKz
 					label.Description = product.CompositionKz
+					label.DescriptionRu = product.CompositionRu
+					label.KzRuMargin = product.KzRuMargin
 					label.Cert = product.CertKz
 					label.CreateDate = dateWidget.Text
 					label.Weight = weightStr
@@ -167,9 +168,13 @@ func main() {
 					label.Measure = product.Measure
 					label.DateCode = utils.DateToCode()
 					label.Lang = selectedLang
+					label.DateType = product.DateType
+					label.DateBool = dateCheckWidget.Checked
 				} else {
 					label.Name = product.NameEn
 					label.Description = product.CompositionEn
+					label.DescriptionRu = product.CompositionRu
+					label.KzRuMargin = product.KzRuMargin
 					label.Cert = product.CertEn
 					label.CreateDate = dateWidget.Text
 					label.Weight = weightStr
@@ -178,6 +183,8 @@ func main() {
 					label.Measure = product.Measure
 					label.DateCode = utils.DateToCode()
 					label.Lang = selectedLang
+					label.DateType = product.DateType
+					label.DateBool = dateCheckWidget.Checked
 				}
 
 				countPrintStr, err := countPrintBinding.Get()

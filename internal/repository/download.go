@@ -22,11 +22,11 @@ func isFileStale(filename string, maxAge time.Duration) bool {
 
 func Get() []byte {
 
-	const maxAge = 24 * time.Hour
-
-	if !isFileStale(filename, maxAge) {
-		return getFile()
-	}
+	//const maxAge = 24 * time.Hour
+	//
+	//if !isFileStale(filename, maxAge) {
+	//	return getFile()
+	//}
 
 	url := "https://boszhan.kz/api/label"
 	data, err := send("GET", url, nil)
