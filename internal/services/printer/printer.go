@@ -150,9 +150,9 @@ func getData(label Label, countPrint string) string {
 		data += "^XA^CI28^LL725^PW463"
 		data += "^FO300,590" + getStaticImage()
 
-		data += fmt.Sprintf("^FO5,5^FB445,3,0^AEN,20,20^FD%s^FS", label.Name)
+		data += fmt.Sprintf("^FO5,5^FB450,4,0^AEN,20,20^FD%s^FS", label.Name)
 
-		data += fmt.Sprintf("^FO5,65^FB445,35,0^AEN,16,16^FD%s^FS", label.Description)
+		data += fmt.Sprintf("^FO5,78^FB445,35,0^AEN,16,16^FD%s^FS", label.Description)
 
 		data += fmt.Sprintf("^FO390,495^GB55,30,1^FS ^FO399,508^AEN,16,16^FD%s^FS", label.DateCode)
 
@@ -172,7 +172,7 @@ func getData(label Label, countPrint string) string {
 		}
 
 		if label.Measure == "2" && label.Weight != "0" && label.Weight != "" {
-			data += "^FO10,555^AENб16,16^FDтаза салмағы/масса нетто: " + label.Weight + " гр^FS"
+			data += "^FO10,555^AENб16,16^FDтаза салмағы/масса нетто: " + label.Weight + " г^FS"
 		}
 		if label.Barcode != "" {
 			data += fmt.Sprintf("^FO10,570^BEN,70,Y,N,N^FD%s^FS", label.Barcode)
@@ -215,7 +215,7 @@ func getData(label Label, countPrint string) string {
 		}
 
 		if label.Measure == "2" && label.Weight != "0" && label.Weight != "" {
-			data += "^FO10,655^AENб16,16^FDтаза салмағы/масса нетто: " + label.Weight + " гр^FS"
+			data += "^FO10,655^AENб16,16^FDтаза салмағы/масса нетто: " + label.Weight + " г^FS"
 		}
 		if label.Barcode != "" {
 			data += fmt.Sprintf("^FO10,670^BEN,70,Y,N,N^FD%s^FS", label.Barcode)
