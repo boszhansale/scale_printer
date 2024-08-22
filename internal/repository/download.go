@@ -3,6 +3,7 @@ package repository
 import (
 	"log"
 	"os"
+	"test/internal/logger"
 	"time"
 )
 
@@ -31,17 +32,17 @@ func Get() []byte {
 	url := "https://boszhan.kz/api/label"
 	data, err := send("GET", url, nil)
 	if err != nil {
-		log.Println("Error sending request:", err)
+		logger.Error("Error writing to file:", err)
 		return getFile()
 	}
 
 	err = os.WriteFile(filename, data, 0644)
 	if err != nil {
-		log.Println("Error writing to file:", err)
+		logger.Error("Error writing to file:", err)
 		return getFile()
 	}
 
-	log.Println("Data saved to file")
+	logger.Info("Data saved to file")
 	return data
 }
 func Download() {
@@ -49,17 +50,17 @@ func Download() {
 	url := "https://boszhan.kz/api/label"
 	data, err := send("GET", url, nil)
 	if err != nil {
-		log.Println("Error sending request:", err)
+		logger.Error("Error sending request:", err)
 		return
 	}
 
 	err = os.WriteFile(filename, data, 0644)
 	if err != nil {
-		log.Println("Error writing to file:", err)
+		logger.Error("Error writing to file:", err)
 		return
 	}
 
-	log.Println("Data saved to file")
+	logger.Info("Data saved to file")
 }
 
 func getFile() []byte {

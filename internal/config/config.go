@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/ilyakaznacheev/cleanenv"
-	"log"
+	"test/internal/logger"
 )
 
 type Config struct {
@@ -14,7 +14,7 @@ func NewConfig() *Config {
 	path := "./.env"
 	var cfg Config
 	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
-		log.Fatalf("failed to read config: %v", err)
+		logger.Error("failed to read config: %v", err)
 	}
 	return &cfg
 }

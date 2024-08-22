@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -12,6 +11,7 @@ import (
 	"strconv"
 	"test/internal/components"
 	"test/internal/config"
+	"test/internal/logger"
 	"test/internal/repository"
 	"test/internal/services/label"
 	"test/internal/services/printer"
@@ -21,10 +21,14 @@ import (
 )
 
 func main() {
+	err := logger.Init("app.log")
+	if err != nil {
+		log.Fatal("Error initializing logger:", err)
+	}
 	jsonStr := repository.Get()
+	cfg := config.NewConfig()
 	db := repository.New(jsonStr)
 
-	cfg := config.NewConfig()
 	a := app.New()
 	w := a.NewWindow("Весовой Печать этикеток")
 	w.Resize(fyne.NewSize(900, 700))
@@ -44,7 +48,7 @@ func main() {
 	//весы
 	scale, scaleErr := scale.Connect(cfg.WeightAddress)
 	if scaleErr != nil {
-		log.Println("error connect to scale")
+		logger.Error("error connect to scale")
 		utils.ErrorMessage(scaleErr, w)
 	}
 
@@ -55,10 +59,8 @@ func main() {
 				continue
 			}
 			value, stb, err := scale.GetWeight()
-			log.Println(value)
 			if err != nil {
-				log.Println("error get weight_app")
-				log.Println(err)
+				logger.Error("error get weight_app: ", err.Error())
 			} else {
 				weightBinding.Set(strconv.FormatInt(value, 10))
 
@@ -149,7 +151,7 @@ func main() {
 	go func() {
 		prt, err := printer.NewPrinter(cfg.PrinterName)
 		if err != nil {
-			log.Println("error connect to printer")
+			logger.Error("error connect to printer: " + err.Error())
 			utils.ErrorMessage(err, w)
 		}
 		defer prt.Close()
@@ -164,15 +166,21 @@ func main() {
 				continue
 			}
 			weightStr, err := weightBinding.Get()
+			if err != nil {
+				logger.Error("error get weightStr: ", err.Error())
+				utils.ErrorMessage(err, w)
+				return
+			}
 			product, err := db.GetProduct(selectedCategory, selectedProduct, selectedLang)
 			if err != nil {
-				log.Println(err)
+				logger.Error("get product error: ", err.Error())
 				//errorMessage(err, w)
 				continue
 			}
 			newBarcode, err := utils.BarcodeGenerate(product.Barcode, weightStr)
 
 			if err != nil {
+				logger.Error("error generate barcode: ", err.Error())
 				utils.ErrorMessage(err, w)
 				return
 			}
@@ -206,15 +214,14 @@ func main() {
 			command := labelData.Generate()
 			err = prt.Print(command)
 			if err != nil {
-				log.Println(err)
-				continue
-				//errorMessage(err, w)
+				logger.Error("label generate: ", err.Error())
+				utils.ErrorMessage(err, w)
+				return
 			}
-			log.Println("print success")
+			logger.Info("print success")
 		}
 	}()
 
-	fmt.Println(selectedCategory, selectedProduct)
 	w.SetContent(content)
 	w.ShowAndRun()
 }

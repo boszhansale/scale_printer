@@ -3,7 +3,7 @@ package repository
 import (
 	"encoding/json"
 	"errors"
-	"log"
+	"test/internal/logger"
 	"test/internal/models"
 )
 
@@ -15,7 +15,7 @@ func New(str []byte) *DB {
 	var data []models.CategoriesWithProduct
 	err := json.Unmarshal(str, &data)
 	if err != nil {
-		log.Println("Error unmarshalling JSON:", err)
+		logger.Error("Error unmarshalling JSON:", err)
 		return nil
 	}
 	return &DB{data}

@@ -6,7 +6,6 @@ require (
 	fyne.io/fyne/v2 v2.4.5
 	github.com/alexbrainman/printer v0.0.0-20200912035444-f40f26f0bdeb
 	github.com/ilyakaznacheev/cleanenv v1.5.0
-	github.com/mattn/go-sqlite3 v1.14.22
 	simonwaldherr.de/go/zplgfa v1.1.1
 )
 
