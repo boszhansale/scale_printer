@@ -13,6 +13,7 @@ import (
 	"test/internal/components"
 	"test/internal/config"
 	"test/internal/repository"
+	"test/internal/services/label"
 	"test/internal/services/printer"
 	"test/internal/services/scale"
 	"test/internal/utils"
@@ -146,6 +147,12 @@ func main() {
 	)
 
 	go func() {
+		prt, err := printer.NewPrinter(cfg.PrinterName)
+		if err != nil {
+			log.Println("error connect to printer")
+			utils.ErrorMessage(err, w)
+		}
+		defer prt.Close()
 		for {
 			<-stable
 			if selectedProduct == "" {
@@ -169,40 +176,35 @@ func main() {
 				utils.ErrorMessage(err, w)
 				return
 			}
-			label := printer.Label{}
+			labelData := label.Label{}
 
+			labelData.CreateDate = dateWidget.Text
+			labelData.Weight = weightStr
+			labelData.Barcode = newBarcode
+			labelData.Paper = selectedPaper
+			labelData.DateCode = utils.DateToCode()
+			labelData.Lang = selectedLang
+			labelData.DateBool = dateCheckWidget.Checked
+			labelData.CountCopy = 1
 			if selectedLang == "kz" {
-				label.Name = product.NameKz
-				label.Description = product.CompositionKz
-				label.DescriptionRu = product.CompositionRu
-				label.KzRuMargin = product.KzRuMargin
-				label.Cert = product.CertKz
-				label.CreateDate = dateWidget.Text
-				label.Weight = weightStr
-				label.Barcode = newBarcode
-				label.Paper = selectedPaper
-				label.Measure = product.Measure
-				label.DateCode = utils.DateToCode()
-				label.Lang = selectedLang
-				label.DateCode = product.DateType
-				label.DateBool = dateCheckWidget.Checked
+				labelData.Name = product.NameKz
+				labelData.Description = product.CompositionKz
+				labelData.DescriptionRu = product.CompositionRu
+				labelData.KzRuMargin = product.KzRuMargin
+				labelData.Cert = product.CertKz
+				labelData.Measure = product.Measure
+				labelData.DateCode = product.DateType
 			} else {
-				label.Name = product.NameEn
-				label.Description = product.CompositionEn
-				label.DescriptionRu = product.CompositionRu
-				label.KzRuMargin = product.KzRuMargin
-				label.Cert = product.CertEn
-				label.CreateDate = dateWidget.Text
-				label.Weight = weightStr
-				label.Barcode = newBarcode
-				label.Paper = selectedPaper
-				label.Measure = product.Measure
-				label.DateCode = utils.DateToCode()
-				label.Lang = selectedLang
-				label.DateType = product.DateType
-				label.DateBool = dateCheckWidget.Checked
+				labelData.Name = product.NameEn
+				labelData.Description = product.CompositionEn
+				labelData.DescriptionRu = product.CompositionRu
+				labelData.KzRuMargin = product.KzRuMargin
+				labelData.Cert = product.CertEn
+				labelData.Measure = product.Measure
+				labelData.DateType = product.DateType
 			}
-			err = label.Print(cfg.PrinterName, "1")
+			command := labelData.Generate()
+			err = prt.Print(command)
 			if err != nil {
 				log.Println(err)
 				continue
