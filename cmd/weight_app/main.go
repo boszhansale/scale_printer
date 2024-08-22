@@ -29,6 +29,13 @@ func main() {
 	cfg := config.NewConfig()
 	db := repository.New(jsonStr)
 
+	prt, err := printer.NewPrinter(cfg.PrinterName)
+	if err != nil {
+		logger.Error("error connect to printer: " + err.Error())
+	}
+	prt.Start(cfg.PrinterName)
+
+	defer prt.Close()
 	a := app.New()
 	w := a.NewWindow("Весовой Печать этикеток")
 	w.Resize(fyne.NewSize(900, 700))
@@ -149,12 +156,7 @@ func main() {
 	)
 
 	go func() {
-		prt, err := printer.NewPrinter(cfg.PrinterName)
-		if err != nil {
-			logger.Error("error connect to printer: " + err.Error())
-			utils.ErrorMessage(err, w)
-		}
-		defer prt.Close()
+
 		for {
 			<-stable
 			if selectedProduct == "" {

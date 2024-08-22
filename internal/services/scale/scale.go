@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log"
 	"net"
+	"test/internal/logger"
 	"time"
 )
 
@@ -18,6 +19,7 @@ func Connect(address string) (*Scale, error) {
 	conn, err := net.DialTimeout("tcp", address, 2*time.Second)
 
 	if err != nil {
+		logger.Error("Не удалось подключиться к весам: " + err.Error())
 		return nil, errors.New("Не удалось подключиться к весам ")
 	}
 	//defer conn.Close()
@@ -31,6 +33,7 @@ func (s *Scale) GetWeight() (int64, bool, error) {
 	command := append(header, 0xA0, 0xA0, 0x00)
 	_, err := s.conn.Write(command)
 	if err != nil {
+		logger.Error("Ошибка при записи на весы: " + err.Error())
 		return 0, false, err
 	}
 

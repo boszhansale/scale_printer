@@ -2,10 +2,9 @@ package printer
 
 import (
 	"errors"
-	"fmt"
 	"github.com/alexbrainman/printer"
 	_ "image/png"
-	"log"
+	"test/internal/logger"
 	"test/internal/services/zpl"
 )
 
@@ -14,58 +13,45 @@ type Printer struct {
 }
 
 func NewPrinter(name string) (*Printer, error) {
+	logger.Info("открываем принтер: " + name)
 	p, err := printer.Open(name)
 	if err != nil {
+		logger.Error("ошибка при открытии принтера: " + err.Error())
 		return nil, errors.New("невозможно открыть принтер: " + name)
 	}
-	err = p.StartRawDocument("scale")
+
+	return &Printer{p}, nil
+}
+
+func (p *Printer) Start(name string) error {
+	err := p.StartRawDocument("scale")
 	if err != nil {
-		log.Print(err)
-		return nil, err
+		logger.Error("ошибка при запуске документа: " + err.Error())
+		return err
 	}
 	if name == "ZDesigner ZD888-203dpi ZPL" {
 		_, err = p.Write([]byte(zpl.OldSetNumberFont()))
 		if err != nil {
-			log.Print(err)
-			return nil, errors.New("ошибка при установке шрифта ")
+			logger.Error("ошибка при установке старого шрифта: " + err.Error())
+			return errors.New("ошибка при установке шрифта ")
 		}
 	} else {
 		_, err = p.Write([]byte(zpl.SetNumberFont()))
 		if err != nil {
-			log.Print(err)
-			return nil, errors.New("ошибка при установке шрифта ")
+			logger.Error("ошибка при установке нового шрифта: " + err.Error())
+			return errors.New("ошибка при установке шрифта ")
 		}
 	}
-	return &Printer{p}, nil
+	return nil
 }
 
 func (p *Printer) Print(command string) error {
 
 	_, err := p.Write([]byte(command))
 	if err != nil {
-		log.Print(err)
+		logger.Error("ошибка при записи на принтер: " + err.Error())
 		return errors.New("ошибка при записи на принтер ")
 	}
-	fmt.Println("Записано на принтер: ", command)
-	return nil
-}
-func P(command string) {
-	name := "ZDesigner ZD888-203dpi ZPL"
-	p, err := printer.Open(name)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = p.StartRawDocument("scale")
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = p.Write([]byte(zpl.OldSetNumberFont()))
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	_, err = p.Write([]byte(command))
-	if err != nil {
-		log.Fatal(err)
-	}
+	return nil
 }
