@@ -34,9 +34,10 @@ func main() {
 	prt, err := printer.NewPrinter(cfg.PrinterName)
 	if err != nil {
 		logger.Error("error connect to printer: " + err.Error())
-		return
 	}
 	prt.Start(cfg.PrinterName)
+
+	defer prt.Close()
 
 	a := app.New()
 	w := a.NewWindow("Штучный Печать этикеток")
@@ -230,7 +231,7 @@ func main() {
 					}
 				}
 
-				log.Println("send to printer")
+				utils.Message("Отправлен на печать", w)
 				countPrintBinding.Set("1")
 				weightBinding.Set("0")
 			}},

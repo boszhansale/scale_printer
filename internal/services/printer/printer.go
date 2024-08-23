@@ -24,7 +24,7 @@ func NewPrinter(name string) (*Printer, error) {
 }
 
 func (p *Printer) Start(name string) error {
-	err := p.StartRawDocument("scale")
+	err := p.StartDocument("scale", "RAW")
 	if err != nil {
 		logger.Error("ошибка при запуске документа: " + err.Error())
 		return err
@@ -53,5 +53,40 @@ func (p *Printer) Print(command string) error {
 		return errors.New("ошибка при записи на принтер ")
 	}
 
+	return nil
+}
+func RawPrint(name, command string) error {
+	p, err := printer.Open(name)
+	if err != nil {
+		logger.Error("ошибка при открытии принтера: " + err.Error())
+		return err
+	}
+	defer func(p *printer.Printer) {
+		err := p.Close()
+		if err != nil {
+			logger.Error("ошибка при закрытии принтера: " + err.Error())
+		}
+	}(p)
+
+	err = p.StartDocument("scale", "RAW")
+	if err != nil {
+		logger.Error("ошибка при запуске документа: " + err.Error())
+		return err
+	}
+	_, err = p.Write([]byte(zpl.SetNumberFont()))
+	if err != nil {
+		logger.Error("ошибка при установке нового шрифта: " + err.Error())
+		return err
+	}
+	_, err = p.Write([]byte(command))
+	if err != nil {
+		logger.Error("ошибка при записи на принтер: " + err.Error())
+		return err
+	}
+	err = p.EndDocument()
+	if err != nil {
+		logger.Error("ошибка при завершении документа: " + err.Error())
+		return err
+	}
 	return nil
 }

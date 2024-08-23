@@ -23,3 +23,8 @@ func ErrorMessage(err error, window fyne.Window) {
 	infoDialog := dialog.NewInformation("Ошибка", err.Error(), window)
 	infoDialog.Show()
 }
+
+func Message(text string, window fyne.Window) {
+	infoDialog := dialog.NewInformation("Сообщение", text, window)
+	infoDialog.Show()
+}
