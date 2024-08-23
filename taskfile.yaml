@@ -3,11 +3,11 @@ version: '3'
 dotenv: ['./config/local.yaml']
 
 tasks:
-  build:
+  r:
     cmds:
-      - go build -ldflags -H=windowsgui main.go
+      - fyne-cross windows -app-id="com.boszhan" -arch=amd64 -name=r ./cmd/retail_app
     silent: true
-  fyne:
+  w:
     cmds:
-      - fyne-cross windows -app-id="com.boszhan" -arch=amd64
+      - fyne-cross windows -app-id="com.boszhan" -arch=amd64 -name=w ./cmd/weight_app
     silent: true
