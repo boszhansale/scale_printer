@@ -202,6 +202,7 @@ func main() {
 					labelData.CountCopy = countPrint
 					zplCommand := labelData.Generate()
 					err = printer.RawPrint(cfg.PrinterName, zplCommand)
+					logger.Info("send to print single label")
 					if err != nil {
 						utils.ErrorMessage(err, w)
 						return
@@ -223,9 +224,11 @@ func main() {
 					}
 				}
 
-				utils.Message("Отправлен на печать", w)
 				countPrintBinding.Set("1")
 				weightBinding.Set("0")
+
+				utils.Message("Отправлен на печать", w)
+
 			}},
 		&layout.Spacer{},
 		container.NewGridWithColumns(3, &widget.Button{Text: "скачать базу", OnTapped: func() {
