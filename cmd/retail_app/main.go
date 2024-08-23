@@ -31,14 +31,6 @@ func main() {
 	cfg := config.NewConfig()
 	db := repository.New(jsonStr)
 
-	prt, err := printer.NewPrinter(cfg.PrinterName)
-	if err != nil {
-		logger.Error("error connect to printer: " + err.Error())
-	}
-	prt.Start(cfg.PrinterName)
-
-	defer prt.Close()
-
 	a := app.New()
 	w := a.NewWindow("Штучный Печать этикеток")
 	w.Resize(fyne.NewSize(900, 700))
@@ -209,7 +201,7 @@ func main() {
 				if countPrint <= batchSize {
 					labelData.CountCopy = countPrint
 					zplCommand := labelData.Generate()
-					err = prt.Print(zplCommand)
+					err = printer.RawPrint(cfg.PrinterName, zplCommand)
 					if err != nil {
 						utils.ErrorMessage(err, w)
 						return
@@ -223,7 +215,7 @@ func main() {
 
 						labelData.CountCopy = batchPrintCount
 						zplCommand := labelData.Generate()
-						err = prt.Print(zplCommand)
+						err = printer.RawPrint(cfg.PrinterName, zplCommand)
 						if err != nil {
 							utils.ErrorMessage(err, w)
 							return

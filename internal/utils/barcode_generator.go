@@ -18,7 +18,6 @@ func BarcodeGenerate(barcode string, weight string) (string, error) {
 		return "", err
 	}
 	newBarcode := head + fmt.Sprintf("%05d", w)
-	fmt.Println("noasd " + newBarcode)
 	odd := 0
 	even := 0
 	for i := 0; i < len(newBarcode); i++ {
@@ -32,12 +31,10 @@ func BarcodeGenerate(barcode string, weight string) (string, error) {
 	}
 	total := odd + (even * 3)
 
-	fmt.Println("total: " + strconv.Itoa(total))
 	if total%10 == 0 {
 		return newBarcode + "0", nil
 	} else {
 		up := (((total / 10) + 1) * 10) - total
-		fmt.Println("up: " + strconv.Itoa(up))
 		return newBarcode + strconv.Itoa(up), nil
 	}
 

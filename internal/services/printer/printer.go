@@ -24,7 +24,7 @@ func NewPrinter(name string) (*Printer, error) {
 }
 
 func (p *Printer) Start(name string) error {
-	err := p.StartDocument("scale", "RAW")
+	err := p.StartDocument("scale", "XPS_PASS")
 	if err != nil {
 		logger.Error("ошибка при запуске документа: " + err.Error())
 		return err

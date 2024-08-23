@@ -29,13 +29,6 @@ func main() {
 	cfg := config.NewConfig()
 	db := repository.New(jsonStr)
 
-	prt, err := printer.NewPrinter(cfg.PrinterName)
-	if err != nil {
-		logger.Error("error connect to printer: " + err.Error())
-	}
-	prt.Start(cfg.PrinterName)
-
-	defer prt.Close()
 	a := app.New()
 	w := a.NewWindow("Весовой Печать этикеток")
 	w.Resize(fyne.NewSize(900, 700))
@@ -214,7 +207,7 @@ func main() {
 				labelData.DateType = product.DateType
 			}
 			command := labelData.Generate()
-			err = prt.Print(command)
+			err = printer.RawPrint(cfg.PrinterName, command)
 			if err != nil {
 				logger.Error("label generate: ", err.Error())
 				utils.ErrorMessage(err, w)
