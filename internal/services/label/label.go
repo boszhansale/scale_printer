@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	measurerKz = "Өндіруші: «Первомайские деликатесы» ЖШС, Қазақстан Республикасы, Алматы облысы, Іле ауданы, Қоянқұс ауылы, Абай көшесі, №200"
-	measurerRu = "Изготовитель: ТОО«Первомайские Деликатесы», Республика Казахстан, Алматинская область, Илийский район, село Коянкус,улица Абай, №200. т:+7(727)260-36-48"
-	measurerEn = "Manufacturer: Pervomayskie Delikatesy LLP, Republic of Kazakhstan, Almaty region, Ili district,Koyankus village,Abay Street, No. 200 tel: +7(727)260-36-48"
+	measurerKz = "Өндіруші: «Первомайские деликатесы» ЖШС, Қазақстан, Алматы облысы, Алатау қаласы, Қоянқұс шағын ауданы, Абай көшесі, ғимарат 200,т:+77752562255"
+	measurerRu = "Изготовитель: ТОО«Первомайские Деликатесы», Казахстан, Алматинская область, город Алатау, микрорайон Коянкус, улица Абая, здание 200,т:+77752562255"
+	measurerEn = "Manufacturer: Pervomayskie Delikatesy LLP, Kazakhstan, Almaty Region, Alatau City, Koyankus District, Abay Street, Building 200 t:+77752562255"
 )
 
 type Label struct {
